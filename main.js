@@ -42,11 +42,10 @@ function testAABB2AABB() {
 function setCirculo(){
     let x = AABB.w - AABB.x
     let y = AABB.h - AABB.y
-    let h = Math.sqrt(x * x + y * y) / 2
-
+    let r = Math.sqrt(x * x + y * y) / 2
 
     ctx.beginPath()
-    ctx.arc(AABB.x + ((AABB.w - AABB.x) / 2), AABB.y + ((AABB.h - AABB.y) / 2), h, 0, 2 * Math.PI)
+    ctx.arc(AABB.x + ((AABB.w - AABB.x) / 2), AABB.y + ((AABB.h - AABB.y) / 2), r, 0, 2 * Math.PI)
     ctx.stroke()
 }
 
