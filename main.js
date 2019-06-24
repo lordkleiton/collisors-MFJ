@@ -48,8 +48,8 @@ function setCirculo(){
     ctx.arc(AABB.x + ((AABB.w - AABB.x) / 2), AABB.y + ((AABB.h - AABB.y) / 2), r, 0, 2 * Math.PI)
     ctx.stroke()
 
-    console.log('r1', r)
-
+    //console.log('r1', r)
+/* 
     x = 10000000
     y = 10000000
     let xl = 0
@@ -78,17 +78,17 @@ function setCirculo(){
         }
     }
 
-    console.log('r3', d/2)
+    console.log('r3', d/2) */
 
     /* ctx.beginPath()
     ctx.arc(x + ((xl - x) / 2), y + ((yl - y) / 2), r, 0, 2 * Math.PI)
     ctx.stroke() */
 
 
-    ctx.beginPath()
+    /* ctx.beginPath()
     ctx.arc(x + ((xl - x) / 2), y + ((yl - y) / 2), d/2, 0, 2 * Math.PI)
     ctx.stroke()
-
+ */
 }
 
 /* funções comuns */
