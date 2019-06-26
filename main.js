@@ -60,11 +60,10 @@ function testCircle2AABB(){
     return (r || ((p1 <= circulo.r) || (p2 <= circulo.r) || (p3 <= circulo.r) || (p4 <= circulo.r)))
 }
 
-function testeCircle2Circle(){
+function testCircle2Circle(){
     let d1 = distance(Math.abs(circulo.x - (mousePos.x + mousePadding / 2)), Math.abs(circulo.y - (mousePos.y + mousePadding / 2)))
 
-    //console.log((d1 - (circulo.r + (mousePos.x + mousePadding / 2))))
-    return (circulo.r + (mousePos.x + mousePadding / 2)) - d1//(d1 - (circulo.r + (mousePos.x + mousePadding / 2)) <= 0)
+    return d1 <= circulo.r + mousePadding / 2
 }
 
 function distance(width, height){
@@ -77,6 +76,10 @@ function drawCircle(color){
     ctx.arc(circulo.x, circulo.y, circulo.r, 0, 2 * Math.PI)
     ctx.fill()
 }
+
+/* OBB */
+
+
 
 /* funções comuns */
 
@@ -95,7 +98,6 @@ function click(e){
 function move(e){
     setMouse(e)
     draw()
-    console.log(testeCircle2Circle())
 }
 
 function drawMouse(type){
@@ -117,7 +119,7 @@ function draw(){
             (testAABB2AABB()) ? drawAABB('blue') : drawAABB('red')
             if (mouseMode === 1){
                 setCircle();
-                (testCircle2AABB()) ? drawCircle('blue') : drawCircle('red')
+                (testCircle2Circle()) ? drawCircle('blue') : drawCircle('red')
                 drawMouse('circulo')
             }
             else{
