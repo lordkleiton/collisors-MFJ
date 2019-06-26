@@ -2,7 +2,8 @@
 
 let cv = document.getElementById('cv')
 let ctx = cv.getContext('2d')
-let mode = 0
+let canvasMode = 0
+let mouseMode = 1
 let pontos = []
 let AABB = {x: 100000, y: 100000, w: 0, h: 0}
 let circulo = {x: 100000, y: 100000, r: 0}
@@ -39,74 +40,68 @@ function testAABB2AABB() {
 
 /* círculo */
 
-function setCirculo(){
+function setCircle(){
     let x = AABB.w - AABB.x
     let y = AABB.h - AABB.y
-    let r = Math.sqrt(x * x + y * y) / 2
+    let r = distance(x, y) / 2
 
+    circulo.x = AABB.x + ((AABB.w - AABB.x) / 2)
+    circulo.y = AABB.y + ((AABB.h - AABB.y) / 2)
+    circulo.r = r
+}
+
+function testCircle2AABB(){
+    let r = testAABB2AABB()
+    let p1 = distance(Math.abs(mousePos.x - circulo.x), Math.abs(mousePos.y - circulo.y))
+    let p2 = distance(Math.abs(mousePos.x + mousePadding - circulo.x), Math.abs(mousePos.y - circulo.y))
+    let p3 = distance(Math.abs(mousePos.x - circulo.x), Math.abs(mousePos.y + mousePadding - circulo.y))
+    let p4 = distance(Math.abs(mousePos.x + mousePadding - circulo.x), Math.abs(mousePos.y + mousePadding - circulo.y))
+    
+    return (r || ((p1 <= circulo.r) || (p2 <= circulo.r) || (p3 <= circulo.r) || (p4 <= circulo.r)))
+}
+
+function testeCircle2Circle(){
+    let d1 = distance(Math.abs(circulo.x - (mousePos.x + mousePadding / 2)), Math.abs(circulo.y - (mousePos.y + mousePadding / 2)))
+
+    //console.log((d1 - (circulo.r + (mousePos.x + mousePadding / 2))))
+    return (circulo.r + (mousePos.x + mousePadding / 2)) - d1//(d1 - (circulo.r + (mousePos.x + mousePadding / 2)) <= 0)
+}
+
+function distance(width, height){
+    return Math.sqrt(width * width + height * height)
+}
+
+function drawCircle(color){
+    ctx.fillStyle = color
     ctx.beginPath()
-    ctx.arc(AABB.x + ((AABB.w - AABB.x) / 2), AABB.y + ((AABB.h - AABB.y) / 2), r, 0, 2 * Math.PI)
-    ctx.stroke()
-
-    //console.log('r1', r)
-/* 
-    x = 10000000
-    y = 10000000
-    let xl = 0
-    let yl = 0
-
-    for (let ponto of pontos){
-        x = Math.min(x, ponto.x)
-        xl = Math.max(xl, ponto.x)
-        y = Math.min(y, ponto.y)
-        yl = Math.max(yl, ponto.y)
-    }
-
-    r = Math.max((xl - x) / 2, (yl - y) / 2)
-
-    console.log('r2', r)
-
-    let d = 0;
-
-    for (let i = 0; i < pontos.length; i++){
-        for (let j = 0; j < pontos.length; j++){
-            let xa = pontos[j].x - pontos[i].x
-            let ya = pontos[j].y - pontos[i].y
-            let aux = Math.sqrt(xa * xa + ya * ya)
-
-            if (aux > d) d = aux
-        }
-    }
-
-    console.log('r3', d/2) */
-
-    /* ctx.beginPath()
-    ctx.arc(x + ((xl - x) / 2), y + ((yl - y) / 2), r, 0, 2 * Math.PI)
-    ctx.stroke() */
-
-
-    /* ctx.beginPath()
-    ctx.arc(x + ((xl - x) / 2), y + ((yl - y) / 2), d/2, 0, 2 * Math.PI)
-    ctx.stroke()
- */
+    ctx.arc(circulo.x, circulo.y, circulo.r, 0, 2 * Math.PI)
+    ctx.fill()
 }
 
 /* funções comuns */
 
 function click(e){
     pontos.push({x: e.clientX, y: e.clientY})
-    if (mode === 0) setAABB()
+    if (canvasMode === 0) {
+        setAABB()
+        if (mouseMode === 1){
+            setCircle()
+        }
+    }
+
     draw()
 }
 
 function move(e){
     setMouse(e)
     draw()
+    console.log(testeCircle2Circle())
 }
 
-function drawMouse(){
+function drawMouse(type){
     ctx.beginPath()
-    ctx.rect(mousePos.x, mousePos.y, mousePadding, mousePadding)
+    if (type === 'quadrado') ctx.rect(mousePos.x, mousePos.y, mousePadding, mousePadding)
+    else ctx.arc(mousePos.x + mousePadding / 2, mousePos.y + mousePadding / 2, mousePadding / 2, 0, 2 * Math.PI) 
     ctx.stroke()
 }
 
@@ -117,10 +112,18 @@ function clear(){
 function draw(){
     clear()
 
-    if (mode === 0){
-        if (pontos.length > 1) (testAABB2AABB()) ? drawAABB('blue') : drawAABB('red')
-        if (pontos.length > 1) setCirculo()
-        drawMouse()
+    if (canvasMode === 0){
+        if (pontos.length > 1){ 
+            (testAABB2AABB()) ? drawAABB('blue') : drawAABB('red')
+            if (mouseMode === 1){
+                setCircle();
+                (testCircle2AABB()) ? drawCircle('blue') : drawCircle('red')
+                drawMouse('circulo')
+            }
+            else{
+                drawMouse('quadrado')
+            }
+        }
     } 
     for (let ponto of pontos){
         ctx.beginPath()
