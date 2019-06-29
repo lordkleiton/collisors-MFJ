@@ -1,6 +1,9 @@
 'use strict'
 
 let cv = document.getElementById('cv')
+let m1 = document.getElementById('m1')
+let c1 = document.getElementById('cv1')
+
 let ctx = cv.getContext('2d')
 let canvasMode = 0
 let mouseMode = 1
@@ -12,6 +15,11 @@ let mousePadding = 50
 
 cv.addEventListener('click', click)
 cv.addEventListener('mousemove', move)
+
+function checked() {
+    mouseMode = (m1.checked) ? 0 : 1
+    canvasMode = (c1.checked) ? 0 : 1
+}
 
 /* AABB */
 
@@ -60,6 +68,16 @@ function testCircle2AABB(){
     return (r || ((p1 <= circulo.r) || (p2 <= circulo.r) || (p3 <= circulo.r) || (p4 <= circulo.r)))
 }
 
+function testAABB2Circle(){
+    let p1 = distance(Math.abs(mousePos.x + mousePadding / 2 - AABB.x), Math.abs(mousePos.y + mousePadding / 2 - AABB.y))
+    let p2 = distance(Math.abs(mousePos.x + mousePadding / 2 - AABB.w), Math.abs(mousePos.y + mousePadding / 2 - AABB.y))
+    let p3 = distance(Math.abs(mousePos.x + mousePadding / 2 - AABB.x), Math.abs(mousePos.y + mousePadding / 2 - AABB.h))
+    let p4 = distance(Math.abs(mousePos.x + mousePadding / 2 - AABB.w), Math.abs(mousePos.y + mousePadding / 2 - AABB.h))
+    //let p5 = distance(Math.abs(mousePos.x + mousePadding / 2), Math.abs())
+
+    return ((p1 <= mousePadding / 2) || (p2 <= mousePadding / 2) || (p3 <= mousePadding / 2) || (p4 <= mousePadding / 2))
+}
+
 function testCircle2Circle(){
     let d1 = distance(Math.abs(circulo.x - (mousePos.x + mousePadding / 2)), Math.abs(circulo.y - (mousePos.y + mousePadding / 2)))
 
@@ -77,14 +95,11 @@ function drawCircle(color){
     ctx.fill()
 }
 
-/* OBB */
-
-
-
 /* funções comuns */
 
 function click(e){
     pontos.push({x: e.clientX, y: e.clientY})
+    checked()
     if (canvasMode === 0) {
         setAABB()
         if (mouseMode === 1){
@@ -102,7 +117,7 @@ function move(e){
 
 function drawMouse(type){
     ctx.beginPath()
-    if (type === 'quadrado') ctx.rect(mousePos.x, mousePos.y, mousePadding, mousePadding)
+    if (type === 0) ctx.rect(mousePos.x, mousePos.y, mousePadding, mousePadding)
     else ctx.arc(mousePos.x + mousePadding / 2, mousePos.y + mousePadding / 2, mousePadding / 2, 0, 2 * Math.PI) 
     ctx.stroke()
 }
@@ -113,20 +128,34 @@ function clear(){
 
 function draw(){
     clear()
+    checked()
+    setAABB()
 
-    if (canvasMode === 0){
-        if (pontos.length > 1){ 
+    if (pontos.length > 1){
+        if (canvasMode === 0) {
             (testAABB2AABB()) ? drawAABB('blue') : drawAABB('red')
-            if (mouseMode === 1){
-                setCircle();
-                (testCircle2Circle()) ? drawCircle('blue') : drawCircle('red')
-                drawMouse('circulo')
+            if (mouseMode === 0) {
+                drawMouse(0)
             }
             else{
-                drawMouse('quadrado')
+                (testAABB2Circle()) ? drawAABB('blue') : drawAABB('red')
+                drawMouse(1)
             }
         }
-    } 
+        else{
+            (testAABB2AABB()) ? drawAABB('blue') : drawAABB('red')
+            setCircle();
+            if (mouseMode === 0){
+                (testCircle2AABB()) ? drawCircle('blue') : drawCircle('red')
+                drawMouse(0)
+            }
+            else{
+                (testCircle2Circle()) ? drawCircle('blue') : drawCircle('red')
+                drawMouse(1)
+            }
+        }
+    }
+    
     for (let ponto of pontos){
         ctx.beginPath()
         ctx.arc(ponto.x, ponto.y, 1, 0, 2 * Math.PI)
