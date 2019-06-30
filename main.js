@@ -48,6 +48,21 @@ function distance(width, height) {
     return Math.sqrt(width * width + height * height)
 }
 
+function distanceToSquare() {
+    let p = { x: halfPadding, y: halfPadding }
+    let a = Math.sqrt(p.x * p.x + p.y * p.y)
+    let b
+    let c
+
+    a = a - halfPadding
+
+    b = a * Math.sin(0.785398)
+
+    c = Math.sqrt(a * a - b * b)
+
+    return { x: b, y: c }
+}
+
 function drawCircle(color) {
     ctx.fillStyle = color
     ctx.beginPath()
@@ -135,21 +150,6 @@ function click(e){
     }
 
     draw()
-}
-
-function distanceToSquare() {
-    let p = { x: halfPadding, y: halfPadding }
-    let a = Math.sqrt(p.x * p.x + p.y * p.y)
-    let b
-    let c
-
-    a = a - halfPadding
-
-    b = a * Math.sin(0.785398)
-
-    c = Math.sqrt(a * a - b * b)
-
-    return { x: b, y: c }
 }
 
 function draw() {
